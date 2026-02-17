@@ -116,7 +116,7 @@ da aplicação.
 
 1.  Localizar a pasta do projeto Backend
 2.  Executar:
-    mvn spring-boot:run
+    .\mvnw spring-boot:run
     
 A aplicação será iniciada em:
 
