@@ -15,6 +15,12 @@ foi implementado com React utilizando Vite.
 
 ------------------------------------------------------------------------
 
+## 🎥 Demonstração do sistema
+
+https://www.youtube.com/watch?v=C8U6US3dxV4
+
+------------------------------------------------------------------------
+
 ## Tecnologias Utilizadas
 
 ### Backend
@@ -47,6 +53,7 @@ A persistência foi implementada em memória utilizando `Map`
 As salas foram mockadas e disponibilizadas apenas para listagem.
 
 ------------------------------------------------------------------------
+
 
 ## Regra de Negócio
 
@@ -144,11 +151,6 @@ A aplicação será iniciada em:
     http://localhost:5173
 
 ------------------------------------------------------------------------
-
-## 🎥 Demonstração do sistema
-
-https://www.youtube.com/watch?v=C8U6US3dxV4
-
 
 ## Observações
 
