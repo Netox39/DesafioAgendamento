@@ -112,7 +112,7 @@ da aplicação.
 
 ## Execução do Projeto
 
-### Backend
+### Backend ( Ter JDK 17 ) 
 
 1.  Localizar a pasta do projeto Backend
 2.  Executar:
@@ -122,7 +122,7 @@ A aplicação será iniciada em:
 
     http://localhost:8080
 
-### Frontend
+### Frontend ( Ter Node.js ) 
 
 1.  Localizar a pasta do projeto Frontend
 2.  Executar:
