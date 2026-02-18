@@ -116,7 +116,10 @@ da aplicação.
 
 1.  Localizar a pasta do projeto Backend
 2.  Executar:
-    .\mvnw spring-boot:run
+
+   ```bash
+/mvnw spring-boot:run
+```
     
 A aplicação será iniciada em:
 
@@ -126,10 +129,14 @@ A aplicação será iniciada em:
 
 1.  Localizar a pasta do projeto Frontend
 2.  Executar:
-    npm install
-    
-    npm run dev
 
+```bash
+ npm install
+```
+
+   ```bash  
+    npm run dev
+```
 A aplicação será iniciada em:
 
     http://localhost:5173
