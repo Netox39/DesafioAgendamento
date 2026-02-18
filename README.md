@@ -127,6 +127,7 @@ A aplicação será iniciada em:
 1.  Localizar a pasta do projeto Frontend
 2.  Executar:
     npm install
+    
     npm run dev
 
 A aplicação será iniciada em:
