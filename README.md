@@ -145,12 +145,9 @@ A aplicação será iniciada em:
 
 ------------------------------------------------------------------------
 
-<h2>🎥 Demonstração do sistema</h2>
+## 🎥 Demonstração do sistema
 
-<a href="https://www.youtube.com/watch?v=C8U6US3dxV4" target="_blank">
-  ▶️ Clique aqui para assistir ao vídeo
-</a>
-
+https://www.youtube.com/watch?v=C8U6US3dxV4
 
 
 ## Observações
