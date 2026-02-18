@@ -145,9 +145,12 @@ A aplicação será iniciada em:
 
 ------------------------------------------------------------------------
 
-## 🎥 Demonstração do sistema
+<h2>🎥 Demonstração do sistema</h2>
 
-https://www.youtube.com/watch?v=C8U6US3dxV4
+<a href="https://www.youtube.com/watch?v=C8U6US3dxV4">
+  <img src="https://img.shields.io/badge/Assistir%20Demo-Click%20Here-blue?style=for-the-badge">
+</a>
+
 
 
 ## Observações
