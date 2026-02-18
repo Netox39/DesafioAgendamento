@@ -147,8 +147,8 @@ A aplicação será iniciada em:
 
 <h2>🎥 Demonstração do sistema</h2>
 
-<a href="https://www.youtube.com/watch?v=C8U6US3dxV4">
-  <img src="https://img.shields.io/badge/Assistir%20Demo-Click%20Here-blue?style=for-the-badge">
+<a href="https://www.youtube.com/watch?v=C8U6US3dxV4" target="_blank">
+  ▶️ Clique aqui para assistir ao vídeo
 </a>
 
 
