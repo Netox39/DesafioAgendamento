@@ -120,7 +120,7 @@ da aplicação.
 2.  Executar:
 
    ```bash
-/mvnw spring-boot:run
+mvnw spring-boot:run
 ```
     
 A aplicação será iniciada em:
