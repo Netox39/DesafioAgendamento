@@ -145,6 +145,11 @@ A aplicação será iniciada em:
 
 ------------------------------------------------------------------------
 
+## 🎥 Demonstração do sistema
+
+https://www.youtube.com/watch?v=C8U6US3dxV4
+
+
 ## Observações
 
 -   A persistência é realizada em memória.\
