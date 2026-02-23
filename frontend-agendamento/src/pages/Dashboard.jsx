@@ -122,10 +122,9 @@ export default function Dashboard() {
     carregar();
   }, []);
 
- async function criar(e) {
+ aasync function criar(e) {
   e.preventDefault();
-
-  console.log("CLICOU EM CRIAR", form);
+  setErro("");
 
   try {
     setLoading(true);
@@ -137,10 +136,16 @@ export default function Dashboard() {
       horario: form.horario,
       descricao: form.descricao,
     });
-    await carregarAgendamentos(); 
+
+    setForm((f) => ({ ...f, descricao: "" }));
+
+    await carregarAgendamentos?.();
+
   } catch (err) {
     console.error(err);
-    alert(err.message || "Erro ao criar agendamento");
+
+    setErro(err.message || "Erro ao criar agendamento");
+
   } finally {
     setLoading(false);
   }
