@@ -66,7 +66,7 @@ async function apiFetch(path, options = {}) {
 export default function Dashboard() {
   const [agendamentos, setAgendamentos] = useState([]);
   const [erro, setErro] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     salaId: SALAS_FIXAS[0].id,
@@ -117,11 +117,24 @@ export default function Dashboard() {
       setLoading(false);
     }
   }
-
+  
+async function carregarAgendamentos() {
+  try {
+    setErro("");
+    const dados = await apiGet("/agendamentos");
+    setAgendamentos(dados);
+  } catch (e) {
+    setErro(e.message || "Erro ao carregar agendamentos");
+  }
+}
+  
   useEffect(() => {
     carregar();
   }, []);
 {erro && <div className="error">{erro}</div>}
+  useEffect(() => {
+  carregarAgendamentos();
+}, []);
  async function criar(e) {
   e.preventDefault();
   setErro("");
