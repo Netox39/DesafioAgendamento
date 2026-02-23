@@ -1,4 +1,4 @@
-package com.DesafioAgendamento.backend.config;
+package com.projetounichristus.backend.config;
 
 import java.util.List;
 
