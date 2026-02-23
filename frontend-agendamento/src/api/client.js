@@ -1,10 +1,7 @@
 const API = "https://agendamento-1nfo.onrender.com";
 
 export function setBasicAuth(user, pass) {
-  localStorage.setItem(
-    "auth",
-    "Basic " + btoa(user + ":" + pass)
-  );
+  localStorage.setItem("auth", "Basic " + btoa(user + ":" + pass));
 }
 
 function headers() {
@@ -17,22 +14,31 @@ async function req(method, path, body) {
     method,
     headers: {
       ...headers(),
-      ...(body ? { "Content-Type": "application/json" } : {})
+      ...(body ? { "Content-Type": "application/json" } : {}),
     },
-    body: body ? JSON.stringify(body) : undefined
+    body: body ? JSON.stringify(body) : undefined,
   });
 
- const txt = await r.text();
-let data;
-try { data = txt ? JSON.parse(txt) : null; } catch { data = txt; }
+  // 204 = sem conteúdo (muito comum em DELETE)
+  if (r.status === 204) return null;
 
-if (!r.ok) {
-  const msg = (data && (data.message || data.error)) || txt || ("HTTP " + r.status);
-  throw new Error(msg);
-}
-return data;
+  const txt = await r.text();
+  let data;
+  try {
+    data = txt ? JSON.parse(txt) : null;
+  } catch {
+    data = txt;
+  }
 
-  return r.json();
+  if (!r.ok) {
+    const msg =
+      (data && typeof data === "object" && (data.message || data.error)) ||
+      (typeof data === "string" ? data : "") ||
+      "HTTP " + r.status;
+    throw new Error(msg);
+  }
+
+  return data;
 }
 
 export const apiGet = (p) => req("GET", p);
