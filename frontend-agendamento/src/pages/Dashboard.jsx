@@ -121,8 +121,8 @@ export default function Dashboard() {
   useEffect(() => {
     carregar();
   }, []);
-
- aasync function criar(e) {
+{erro && <div className="error">{erro}</div>}
+ async function criar(e) {
   e.preventDefault();
   setErro("");
 
