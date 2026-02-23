@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./dashboard.css";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080";
+const API_BASE = import.meta.env.VITE_API_URL || "https://agendamento-1nfo.onrender.com";
 const TURNOS = ["MANHA", "TARDE", "NOITE"];
 const HORARIOS = ["A", "B", "C", "D", "E", "F"];
 
