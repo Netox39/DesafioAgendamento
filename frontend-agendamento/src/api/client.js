@@ -1,7 +1,10 @@
-const API = import.meta.env.VITE_API_URL || "https://agendamento-1nfo.onrender.com";
+const API = "https://agendamento-info.onrender.com";
 
 export function setBasicAuth(user, pass) {
-  localStorage.setItem("auth", "Basic " + btoa(user + ":" + pass));
+  localStorage.setItem(
+    "auth",
+    "Basic " + btoa(user + ":" + pass)
+  );
 }
 
 function headers() {
@@ -12,22 +15,18 @@ function headers() {
 async function req(method, path, body) {
   const r = await fetch(API + path, {
     method,
-    headers: { ...headers(), ...(body ? { "Content-Type": "application/json" } : {}) },
-    body: body ? JSON.stringify(body) : undefined,
+    headers: {
+      ...headers(),
+      ...(body ? { "Content-Type": "application/json" } : {})
+    },
+    body: body ? JSON.stringify(body) : undefined
   });
 
-  const t = await r.text();
-  let d;
-  try { d = t ? JSON.parse(t) : null; } catch { d = t; }
-
   if (!r.ok) {
-    const msg = (d && (d.error || d.message)) || "";
-    if (r.status === 400) throw new Error("Não é possível criar o mesmo agendamento.");
-    throw new Error(msg || ("HTTP " + r.status));
+    throw new Error("HTTP " + r.status);
   }
 
-
-  return d;
+  return r.json();
 }
 
 export const apiGet = (p) => req("GET", p);
