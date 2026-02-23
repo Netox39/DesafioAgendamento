@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { apiGet, apiPost } from "../client";
 import "./dashboard.css";
 
 const API_BASE = import.meta.env.VITE_API_URL || "https://agendamento-1nfo.onrender.com";
