@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                 .requestMatchers("/", "/error").permitAll()
-             
+
                 .anyRequest().authenticated()
             )
             .httpBasic(Customizer.withDefaults());
