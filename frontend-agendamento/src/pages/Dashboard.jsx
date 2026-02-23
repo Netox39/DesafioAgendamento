@@ -34,7 +34,7 @@ const auth = () => {
 };
 
 async function apiFetch(path, options = {}) {
-  const res = await fetch("https://agendamento-info.onrender.com/agendamentos", {
+  const res = await fetch("https://agendamento-1nfo.onrender.com/agendamentos", {
   headers: {
     "Authorization": "Basic " + btoa("admin:admin123")
   }
