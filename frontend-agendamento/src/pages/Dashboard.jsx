@@ -1,8 +1,8 @@
+// frontend-agendamento/src/pages/Dashboard.jsx
 import React, { useEffect, useMemo, useState } from "react";
-import { apiGet, apiPost } from "../client";
+import { apiGet, apiPost, apiPut, apiDelete } from "../client";
 import "./dashboard.css";
 
-const API_BASE = import.meta.env.VITE_API_URL || "https://agendamento-1nfo.onrender.com";
 const TURNOS = ["MANHA", "TARDE", "NOITE"];
 const HORARIOS = ["A", "B", "C", "D", "E", "F"];
 
@@ -29,49 +29,18 @@ const addDays = (date, n) => {
   d.setHours(0, 0, 0, 0);
   return d;
 };
-const auth = () => {
-  const token = localStorage.getItem("basicAuth");
-  return token ? `Basic ${token}` : `Basic ${btoa("admin:admin123")}`;
-};
 
-async function apiFetch(path, options = {}) {
-  const method = options.method || "GET";
-
-  const headers = {
-    ...(options.headers || {}),
-    "Authorization": auth(),
+function normalizeAg(a) {
+  // backend pode retornar salaId ou sala_id; normaliza
+  const salaId = a.salaId ?? a.sala_id ?? a.sala?.id ?? a.sala;
+  return {
+    id: a.id,
+    salaId,
+    data: a.data,
+    turno: a.turno,
+    horario: a.horario,
+    descricao: a.descricao,
   };
-
-  if (options.body && !(options.body instanceof FormData)) {
-    headers["Content-Type"] = "application/json";
-  }
-
-  const res = await fetch(API_BASE + path, {
-    ...options,
-    method,
-    headers,
-  });
-
-  if (res.status === 204) return null;
-
-  const text = await res.text();
-  let data;
-  try {
-    data = text ? JSON.parse(text) : null;
-  } catch {
-    data = text;
-  }
-
-  if (!res.ok) {
-    if (res.status === 400) throw new Error("Não é possível criar o mesmo agendamento.");
-    const msg =
-      (data && typeof data === "object" && (data.message || data.error)) ||
-      (typeof data === "string" ? data : "") ||
-      `HTTP ${res.status}`;
-    throw new Error(msg);
-  }
-
-  return data;
 }
 
 export default function Dashboard() {
@@ -101,17 +70,19 @@ export default function Dashboard() {
 
   const salasPorAndar = useMemo(() => {
     const map = {};
-    for (const s of SALAS_FIXAS) {
-      (map[s.andar] ||= []).push(s);
-    }
+    for (const s of SALAS_FIXAS) (map[s.andar] ||= []).push(s);
     return Object.entries(map);
   }, []);
 
   const agBySalaDia = useMemo(() => {
     const map = new Map();
-    for (const a of agendamentos) {
+    for (const a0 of agendamentos) {
+      const a = normalizeAg(a0);
+      if (!a.salaId || !a.data) continue;
       const key = `${a.salaId}|${a.data}`;
-      (map.get(key) || map.set(key, []).get(key)).push(a);
+      const arr = map.get(key) || [];
+      arr.push(a);
+      map.set(key, arr);
     }
     return map;
   }, [agendamentos]);
@@ -120,7 +91,7 @@ export default function Dashboard() {
     setLoading(true);
     setErro("");
     try {
-      const list = await apiFetch("/agendamentos");
+      const list = await apiGet("/agendamentos");
       setAgendamentos(Array.isArray(list) ? list : []);
     } catch (e) {
       setErro(e?.message || String(e));
@@ -128,41 +99,52 @@ export default function Dashboard() {
       setLoading(false);
     }
   }
-  
+
   useEffect(() => {
     carregar();
   }, []);
-  
- async function criar(e) {
-  e.preventDefault();
-  setErro("");
 
-  try {
-    setLoading(true);
+  async function criar(e) {
+    e.preventDefault();
+    setErro("");
 
-    await apiPost("/agendamentos", {
-      salaId: form.salaId,
-      data: form.data,
-      turno: form.turno,
-      horario: form.horario,
-      descricao: form.descricao,
-    });
+    if (!form.descricao || !form.descricao.trim()) {
+      setErro("Descrição obrigatória.");
+      return;
+    }
 
-    setForm((f) => ({ ...f, descricao: "" }));
+    try {
+      setLoading(true);
 
-    await carregarAgendamentos?.();
+      console.log("CLICOU EM CRIAR", {
+        salaId: form.salaId,
+        data: form.data,
+        turno: form.turno,
+        horario: form.horario,
+        descricao: form.descricao,
+      });
 
-  } catch (err) {
-    console.error(err);
+      await apiPost("/agendamentos", {
+        salaId: form.salaId,
+        data: form.data,
+        turno: form.turno,
+        horario: form.horario,
+        descricao: form.descricao,
+      });
 
-    setErro(err.message || "Erro ao criar agendamento");
+      setForm((f) => ({ ...f, descricao: "" }));
 
-  } finally {
-    setLoading(false);
+      // recarrega para refletir imediatamente (sem precisar dar F5)
+      await carregar();
+    } catch (err) {
+      setErro(err?.message || "Erro ao criar agendamento");
+    } finally {
+      setLoading(false);
+    }
   }
-}
 
-  function abrirModal(a) {
+  function abrirModal(a0) {
+    const a = normalizeAg(a0);
     setModal(a);
     setEditando(false);
     setEdit({
@@ -177,27 +159,50 @@ export default function Dashboard() {
   async function salvar() {
     if (!modal || !editando) return;
     setErro("");
-    if (!edit.descricao || !edit.descricao.trim()) return setErro("Descrição obrigatória.");
+
+    if (!edit.descricao || !edit.descricao.trim()) {
+      setErro("Descrição obrigatória.");
+      return;
+    }
+
     try {
-      await apiFetch(`/agendamentos/${modal.id}`, { method: "PUT", body: JSON.stringify(edit) });
+      setLoading(true);
+
+      await apiPut(`/agendamentos/${modal.id}`, {
+        salaId: edit.salaId,
+        data: edit.data,
+        turno: edit.turno,
+        horario: edit.horario,
+        descricao: edit.descricao,
+      });
+
       setModal(null);
       setEditando(false);
+
       await carregar();
     } catch (e) {
       setErro(e?.message || String(e));
+    } finally {
+      setLoading(false);
     }
   }
 
   async function excluir() {
     if (!modal) return;
     if (!confirm("Excluir agendamento?")) return;
+
     setErro("");
     try {
-      await apiFetch(`/agendamentos/${modal.id}`, { method: "DELETE" });
+      setLoading(true);
+
+      await apiDelete(`/agendamentos/${modal.id}`);
+
       setModal(null);
       await carregar();
     } catch (e) {
       setErro(e?.message || String(e));
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -208,11 +213,14 @@ export default function Dashboard() {
       {erro && <div className="error">{erro}</div>}
 
       <div className="topbar">
-        <button onClick={carregar}>Recarregar</button>
+        <button onClick={carregar} disabled={loading}>
+          {loading ? "Carregando..." : "Recarregar"}
+        </button>
       </div>
 
       <div className="card">
         <h2>Criar agendamento</h2>
+
         <form onSubmit={criar} className="form">
           <label>
             Sala
@@ -274,8 +282,9 @@ export default function Dashboard() {
               })}
             </tr>
           </thead>
+
           <tbody>
-            {loading ? (
+            {loading && agendamentos.length === 0 ? (
               <tr>
                 <td colSpan={8} className="loading">
                   Carregando...
@@ -290,15 +299,18 @@ export default function Dashboard() {
                       <td key={`${andar}-${ymd(d)}`} />
                     ))}
                   </tr>
+
                   {salas.map((s) => (
                     <tr key={s.id}>
                       <td className="sticky-left room">
                         <div className="room-title">{s.descricao}</div>
                         <div className="room-sub">{s.andar}</div>
                       </td>
+
                       {days.map((d) => {
                         const dayKey = ymd(d);
                         const list = agBySalaDia.get(`${s.id}|${dayKey}`) || [];
+
                         return (
                           <td key={`${s.id}-${dayKey}`}>
                             {list.length === 0 ? (
@@ -332,10 +344,15 @@ export default function Dashboard() {
               <strong>Agendamento</strong>
               <button onClick={() => setModal(null)}>✕</button>
             </div>
+
             <div className="modalBody">
               <label>
                 Sala
-                <select disabled={!editando} value={edit.salaId} onChange={(e) => setEdit((x) => ({ ...x, salaId: e.target.value }))}>
+                <select
+                  disabled={!editando}
+                  value={edit.salaId}
+                  onChange={(e) => setEdit((x) => ({ ...x, salaId: e.target.value }))}
+                >
                   {SALAS_FIXAS.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.descricao} ({s.andar})
@@ -346,12 +363,21 @@ export default function Dashboard() {
 
               <label>
                 Data
-                <input disabled={!editando} type="date" value={edit.data} onChange={(e) => setEdit((x) => ({ ...x, data: e.target.value }))} />
+                <input
+                  disabled={!editando}
+                  type="date"
+                  value={edit.data}
+                  onChange={(e) => setEdit((x) => ({ ...x, data: e.target.value }))}
+                />
               </label>
 
               <label>
                 Turno
-                <select disabled={!editando} value={edit.turno} onChange={(e) => setEdit((x) => ({ ...x, turno: e.target.value }))}>
+                <select
+                  disabled={!editando}
+                  value={edit.turno}
+                  onChange={(e) => setEdit((x) => ({ ...x, turno: e.target.value }))}
+                >
                   {TURNOS.map((t) => (
                     <option key={t} value={t}>
                       {t}
@@ -362,7 +388,11 @@ export default function Dashboard() {
 
               <label>
                 Horário
-                <select disabled={!editando} value={edit.horario} onChange={(e) => setEdit((x) => ({ ...x, horario: e.target.value }))}>
+                <select
+                  disabled={!editando}
+                  value={edit.horario}
+                  onChange={(e) => setEdit((x) => ({ ...x, horario: e.target.value }))}
+                >
                   {HORARIOS.map((h) => (
                     <option key={h} value={h}>
                       {h}
@@ -373,15 +403,21 @@ export default function Dashboard() {
 
               <label className="desc">
                 Descrição
-                <input disabled={!editando} value={edit.descricao} onChange={(e) => setEdit((x) => ({ ...x, descricao: e.target.value }))} />
+                <input
+                  disabled={!editando}
+                  value={edit.descricao}
+                  onChange={(e) => setEdit((x) => ({ ...x, descricao: e.target.value }))}
+                />
               </label>
 
               <div className="modalActions">
                 <button onClick={() => setEditando((v) => !v)}>{editando ? "Cancelar" : "Editar"}</button>
-                <button className="primary" onClick={salvar} disabled={!editando}>
+
+                <button className="primary" onClick={salvar} disabled={!editando || loading}>
                   Salvar
                 </button>
-                <button className="danger" onClick={excluir}>
+
+                <button className="danger" onClick={excluir} disabled={loading}>
                   Excluir
                 </button>
               </div>
