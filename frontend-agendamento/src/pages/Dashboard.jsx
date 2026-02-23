@@ -121,18 +121,29 @@ export default function Dashboard() {
     carregar();
   }, []);
 
-  async function criar(e) {
-    e.preventDefault();
-    setErro("");
-    if (!form.descricao || !form.descricao.trim()) return setErro("Descrição obrigatória.");
-    try {
-      await apiFetch("/agendamentos", { method: "POST", body: JSON.stringify(form) });
-      setForm((f) => ({ ...f, descricao: "" }));
-      await carregar();
-    } catch (e2) {
-      setErro(e2?.message || String(e2));
-    }
+ async function criar(e) {
+  e.preventDefault();
+
+  console.log("CLICOU EM CRIAR", form);
+
+  try {
+    setLoading(true);
+
+    await apiPost("/agendamentos", {
+      salaId: form.salaId,
+      data: form.data,
+      turno: form.turno,
+      horario: form.horario,
+      descricao: form.descricao,
+    });
+    await carregarAgendamentos(); 
+  } catch (err) {
+    console.error(err);
+    alert(err.message || "Erro ao criar agendamento");
+  } finally {
+    setLoading(false);
   }
+}
 
   function abrirModal(a) {
     setModal(a);
@@ -186,7 +197,6 @@ export default function Dashboard() {
       <div className="card">
         <h2>Criar agendamento</h2>
         <form onSubmit={criar} className="form">
-          console.log("CLICOU EM CRIAR", { sala, data, turno, horario, descricao });
           <label>
             Sala
             <select value={form.salaId} onChange={(e) => setForm((f) => ({ ...f, salaId: e.target.value }))}>
