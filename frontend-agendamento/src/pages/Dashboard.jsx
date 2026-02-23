@@ -35,11 +35,22 @@ const auth = () => {
 };
 
 async function apiFetch(path, options = {}) {
-  const res = await fetch("https://agendamento-1nfo.onrender.com/agendamentos", {
-  headers: {
-    "Authorization": "Basic " + btoa("admin:admin123")
+  const method = options.method || "GET";
+
+  const headers = {
+    ...(options.headers || {}),
+    "Authorization": auth(),
+  };
+
+  if (options.body && !(options.body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
   }
-})
+
+  const res = await fetch(API_BASE + path, {
+    ...options,
+    method,
+    headers,
+  });
 
   if (res.status === 204) return null;
 
