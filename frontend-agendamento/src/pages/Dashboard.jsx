@@ -129,23 +129,10 @@ export default function Dashboard() {
     }
   }
   
-async function carregarAgendamentos() {
-  try {
-    setErro("");
-    const dados = await apiGet("/agendamentos");
-    setAgendamentos(dados);
-  } catch (e) {
-    setErro(e.message || "Erro ao carregar agendamentos");
-  }
-}
-  
   useEffect(() => {
     carregar();
   }, []);
-{erro && <div className="error">{erro}</div>}
-  useEffect(() => {
-  carregarAgendamentos();
-}, []);
+  
  async function criar(e) {
   e.preventDefault();
   setErro("");
