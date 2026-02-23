@@ -186,6 +186,7 @@ export default function Dashboard() {
       <div className="card">
         <h2>Criar agendamento</h2>
         <form onSubmit={criar} className="form">
+          console.log("CLICOU EM CRIAR", { sala, data, turno, horario, descricao });
           <label>
             Sala
             <select value={form.salaId} onChange={(e) => setForm((f) => ({ ...f, salaId: e.target.value }))}>
