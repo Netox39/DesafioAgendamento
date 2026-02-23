@@ -35,28 +35,24 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 }
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
+   @Bean
+public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of(
-    "https://desafio-agendamento-one.vercel.app",
-    "https://desafio-agendamento-er7j.vercel.app"
-));
-config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
-config.setAllowedHeaders(List.of("*"));
+    config.setAllowedOrigins(List.of(
+            "https://desafio-agendamento-one.vercel.app",
+            "https://desafio-agendamento-er7j.vercel.app"
+    ));
 
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    config.setAllowedHeaders(List.of("*"));
+    config.setExposedHeaders(List.of("*"));
+    config.setAllowCredentials(false); 
 
-        config.setAllowedHeaders(List.of("*"));
-
-        config.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
-
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
+    return source;
+}
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
         UserDetails user = User.withDefaultPasswordEncoder()
