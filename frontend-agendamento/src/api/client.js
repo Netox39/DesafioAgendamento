@@ -1,4 +1,4 @@
-const API = "https://agendamento-info.onrender.com";
+const API = "https://agendamento-1nfo.onrender.com";
 
 export function setBasicAuth(user, pass) {
   localStorage.setItem(
