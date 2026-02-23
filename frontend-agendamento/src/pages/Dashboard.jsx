@@ -34,14 +34,11 @@ const auth = () => {
 };
 
 async function apiFetch(path, options = {}) {
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: auth(),
-      ...(options.headers || {}),
-    },
-  });
+  const res = await fetch("https://agendamento-info.onrender.com/agendamentos", {
+  headers: {
+    "Authorization": "Basic " + btoa("admin:admin123")
+  }
+})
 
   if (res.status === 204) return null;
 
