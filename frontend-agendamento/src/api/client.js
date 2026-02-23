@@ -1,4 +1,4 @@
-const API = import.meta.env.VITE_API_URL || "http://localhost:8080";
+const API = import.meta.env.VITE_API_URL || "https://agendamento-1nfo.onrender.com";
 
 export function setBasicAuth(user, pass) {
   localStorage.setItem("auth", "Basic " + btoa(user + ":" + pass));
