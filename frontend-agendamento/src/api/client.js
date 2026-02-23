@@ -22,9 +22,15 @@ async function req(method, path, body) {
     body: body ? JSON.stringify(body) : undefined
   });
 
-  if (!r.ok) {
-    throw new Error("HTTP " + r.status);
-  }
+ const txt = await r.text();
+let data;
+try { data = txt ? JSON.parse(txt) : null; } catch { data = txt; }
+
+if (!r.ok) {
+  const msg = (data && (data.message || data.error)) || txt || ("HTTP " + r.status);
+  throw new Error(msg);
+}
+return data;
 
   return r.json();
 }
