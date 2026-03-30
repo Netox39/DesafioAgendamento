@@ -19,7 +19,6 @@ async function req(method, path, body) {
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  // 204 = sem conteúdo (muito comum em DELETE)
   if (r.status === 204) return null;
 
   const txt = await r.text();
